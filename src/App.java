@@ -23,9 +23,11 @@ public class App {
         listaOcorrencias.add(urb);
         listaOcorrencias.add(flo);
 
-        // 4. Percorrer a lista e disparar o método print()
-        // O Java vai escolher o método correto em tempo de execução (Dynamic Method
-        // Lookup)
+        // Testar o método da interface antes de imprimir
+        System.out.println(">>> A alterar o estado da primeira ocorrência (Emergência Médica)...");
+        listaOcorrencias.get(0).avancarEstado(); // Passa de "Despacho" para "No Local"
+
+        // Percorrer a lista e disparar o método print()
         for (Ocorrencia oc : listaOcorrencias) {
             oc.print();
             System.out.println("----------------------------------------------------------------------");

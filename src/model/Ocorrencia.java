@@ -4,7 +4,7 @@ import java.time.LocalDateTime;
 import java.util.Objects;
 
 // Classe Abstrata conforme exigido no enunciado
-public abstract class Ocorrencia {
+public abstract class Ocorrencia implements Operacional {
     // Atributo de classe (static) para controlo global de contagem
     private static int totalOcorrenciasContador = 0;
 
@@ -15,7 +15,8 @@ public abstract class Ocorrencia {
     protected LocalDateTime horaAlerta;
     protected String viaturaAtribuida;
 
-    // Construtor sem parâmetros - Usa o método this() para chamar o outro construtor
+    // Construtor sem parâmetros - Usa o método this() para chamar o outro
+    // construtor
     public Ocorrencia() {
         this("Desconhecido", "Nenhuma Viatura");
     }
@@ -40,22 +41,49 @@ public abstract class Ocorrencia {
     }
 
     // Métodos de acesso (Getters e Setters)
-    public int getId() { return id; }
-    public void setId(int id) { this.id = id; }
+    public int getId() {
+        return id;
+    }
 
-    public String getLocalizacao() { return localizacao; }
-    public void setLocalizacao(String localizacao) { this.localizacao = localizacao; }
+    public void setId(int id) {
+        this.id = id;
+    }
 
-    public String getEstado() { return estado; }
-    public void setEstado(String estado) { this.estado = estado; }
+    public String getLocalizacao() {
+        return localizacao;
+    }
 
-    public LocalDateTime getHoraAlerta() { return horaAlerta; }
-    public void setHoraAlerta(LocalDateTime horaAlerta) { this.horaAlerta = horaAlerta; }
+    public void setLocalizacao(String localizacao) {
+        this.localizacao = localizacao;
+    }
 
-    public String getViaturaAtribuida() { return viaturaAtribuida; }
-    public void setViaturaAtribuida(String viaturaAtribuida) { this.viaturaAtribuida = viaturaAtribuida; }
+    public String getEstado() {
+        return estado;
+    }
 
-    public static int getTotalOcorrenciasContador() { return totalOcorrenciasContador; }
+    public void setEstado(String estado) {
+        this.estado = estado;
+    }
+
+    public LocalDateTime getHoraAlerta() {
+        return horaAlerta;
+    }
+
+    public void setHoraAlerta(LocalDateTime horaAlerta) {
+        this.horaAlerta = horaAlerta;
+    }
+
+    public String getViaturaAtribuida() {
+        return viaturaAtribuida;
+    }
+
+    public void setViaturaAtribuida(String viaturaAtribuida) {
+        this.viaturaAtribuida = viaturaAtribuida;
+    }
+
+    public static int getTotalOcorrenciasContador() {
+        return totalOcorrenciasContador;
+    }
 
     // Método print() exigido para imprimir os atributos
     public void print() {
@@ -71,15 +99,33 @@ public abstract class Ocorrencia {
 
     @Override
     public boolean equals(Object obj) {
-        if (this == obj) return true;
-        if (obj == null || getClass() != obj.getClass()) return false;
+        if (this == obj)
+            return true;
+        if (obj == null || getClass() != obj.getClass())
+            return false;
         Ocorrencia outra = (Ocorrencia) obj;
-        return id == outra.id && 
-               Objects.equals(localizacao, outra.localizacao) && 
-               Objects.equals(estado, outra.estado);
+        return id == outra.id &&
+                Objects.equals(localizacao, outra.localizacao) &&
+                Objects.equals(estado, outra.estado);
     }
 
-    // Método clone abstrato - obriga as subclasses a implementar a sua própria cópia
+    // Método clone abstrato - obriga as subclasses a implementar a sua própria
+    // cópia
     @Override
     public abstract Object clone();
+
+    @Override
+    public void avancarEstado() {
+        switch (estado) {
+            case "Despacho":
+                estado = "No Local";
+                break;
+            case "No Local":
+                estado = "Concluida";
+                break;
+            case "Concluida":
+                System.out.println("Esta ocorrência já foi concluída.");
+                break;
+        }
+    }
 }
