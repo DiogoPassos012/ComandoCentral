@@ -1,5 +1,6 @@
 package model;
 
+import java.util.ArrayList;
 import java.util.Objects;
 
 public class EmergenciaMedica extends Ocorrencia {
@@ -9,13 +10,13 @@ public class EmergenciaMedica extends Ocorrencia {
 
     // Construtor sem parâmetros - Usa o método this()
     public EmergenciaMedica() {
-        this("Desconhecido", "Nenhuma Viatura", 0, "Não especificada", 0);
+        this("Desconhecido", new ArrayList<String>(), 0, "Nenhuma", 0);
     }
 
     // Construtor com parâmetros - Usa a referência super para a classe mãe
-    public EmergenciaMedica(String localizacao, String viaturaAtribuida, int numVitimas, String queixaPrincipal,
-            int idadePaciente) {
-        super(localizacao, viaturaAtribuida);
+    public EmergenciaMedica(String localizacao, ArrayList<String> viaturasAtribuidas, int numVitimas,
+            String queixaPrincipal, int idadePaciente) {
+        super(localizacao, viaturasAtribuidas); // Passa o ArrayList para a classe mãe
         this.numVitimas = numVitimas;
         this.queixaPrincipal = queixaPrincipal;
         this.idadePaciente = idadePaciente;
@@ -23,7 +24,7 @@ public class EmergenciaMedica extends Ocorrencia {
 
     // Construtor de cópia - Usa o super para copiar a parte da classe mãe
     public EmergenciaMedica(EmergenciaMedica outra) {
-        super(outra);
+        super(outra); // Passa o objeto para o construtor de cópia da classe mãe
         this.numVitimas = outra.numVitimas;
         this.queixaPrincipal = outra.queixaPrincipal;
         this.idadePaciente = outra.idadePaciente;

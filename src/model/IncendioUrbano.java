@@ -1,5 +1,6 @@
 package model;
 
+import java.util.ArrayList;
 import java.util.Objects;
 
 public class IncendioUrbano extends Incendio {
@@ -8,14 +9,14 @@ public class IncendioUrbano extends Incendio {
 
     // Construtor sem parâmetros - Usa o método this()
     public IncendioUrbano() {
-        this("Desconhecido", "Nenhuma Viatura", 1, 0, "Não especificado", 1);
+        this("Desconhecido", new ArrayList<String>(), 1, 0, "Não especificado", 1);
     }
 
     // Construtor com parâmetros - Usa o super para passar os dados para a classe
     // Incendio
-    public IncendioUrbano(String localizacao, String viaturaAtribuida, int nivelAlarme, int tempoEstimadoCombate,
-            String tipoEdificio, int numPisosAfetados) {
-        super(localizacao, viaturaAtribuida, nivelAlarme, tempoEstimadoCombate);
+    public IncendioUrbano(String localizacao, ArrayList<String> viaturasAtribuidas, int nivelAlarme,
+            int tempoEstimadoCombate, String tipoEdificio, int numPisosAfetados) {
+        super(localizacao, viaturasAtribuidas, nivelAlarme, tempoEstimadoCombate);
         this.tipoEdificio = tipoEdificio;
         this.numPisosAfetados = numPisosAfetados;
     }

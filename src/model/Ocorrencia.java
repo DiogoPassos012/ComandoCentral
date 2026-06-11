@@ -1,6 +1,7 @@
 package model;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Objects;
 
 // Classe Abstrata conforme exigido no enunciado
@@ -13,22 +14,22 @@ public abstract class Ocorrencia implements Operacional {
     protected String localizacao;
     protected String estado; // "Despacho", "No Local", "Concluida"
     protected LocalDateTime horaAlerta;
-    protected String viaturaAtribuida;
+    protected ArrayList<String> viaturasAtribuidas;
 
     // Construtor sem parâmetros - Usa o método this() para chamar o outro
     // construtor
     public Ocorrencia() {
-        this("Desconhecido", "Nenhuma Viatura");
+        this("Desconhecido", new ArrayList<String>());
     }
 
     // Construtor com parâmetros - Usa a referência this
-    public Ocorrencia(String localizacao, String viaturaAtribuida) {
-        totalOcorrenciasContador++; // Incrementa o contador global da classe
+    public Ocorrencia(String localizacao, ArrayList<String> viaturasAtribuidas) {
+        totalOcorrenciasContador++;
         this.id = totalOcorrenciasContador;
         this.localizacao = localizacao;
-        this.viaturaAtribuida = viaturaAtribuida;
+        this.viaturasAtribuidas = new ArrayList<String>(viaturasAtribuidas); // Cópia da lista
         this.estado = "Despacho";
-        this.horaAlerta = LocalDateTime.now(); // Data/Hora atual do sistema
+        this.horaAlerta = LocalDateTime.now();
     }
 
     // Construtor de cópia - Exigido pelo professor
@@ -37,7 +38,7 @@ public abstract class Ocorrencia implements Operacional {
         this.localizacao = outra.localizacao;
         this.estado = outra.estado;
         this.horaAlerta = outra.horaAlerta;
-        this.viaturaAtribuida = outra.viaturaAtribuida;
+        this.viaturasAtribuidas = outra.viaturasAtribuidas;
     }
 
     // Métodos de acesso (Getters e Setters)
@@ -73,12 +74,12 @@ public abstract class Ocorrencia implements Operacional {
         this.horaAlerta = horaAlerta;
     }
 
-    public String getViaturaAtribuida() {
-        return viaturaAtribuida;
+    public ArrayList<String> getViaturasAtribuidas() {
+        return viaturasAtribuidas;
     }
 
-    public void setViaturaAtribuida(String viaturaAtribuida) {
-        this.viaturaAtribuida = viaturaAtribuida;
+    public void setViaturaAtribuida(ArrayList<String> viaturasAtribuidas) {
+        this.viaturasAtribuidas = viaturasAtribuidas;
     }
 
     public static int getTotalOcorrenciasContador() {
@@ -94,7 +95,7 @@ public abstract class Ocorrencia implements Operacional {
 
     @Override
     public String toString() {
-        return "ID: " + id + " | Local: " + localizacao + " | Estado: " + estado + " | Viatura: " + viaturaAtribuida;
+        return "ID: " + id + " | Local: " + localizacao + " | Estado: " + estado + " | Viatura: " + viaturasAtribuidas;
     }
 
     @Override

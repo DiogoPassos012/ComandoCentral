@@ -1,5 +1,6 @@
 package model;
 
+import java.util.ArrayList;
 import java.util.Objects;
 
 public class AcidenteViacao extends Ocorrencia {
@@ -9,13 +10,13 @@ public class AcidenteViacao extends Ocorrencia {
 
     // Construtor sem parâmetros
     public AcidenteViacao() {
-        this("Desconhecido", "Nenhuma Viatura", 0, false, "Urbana");
+        this("Desconhecido", new ArrayList<String>(), 0, false, "Urbana");
     }
 
     // Construtor com parâmetros
-    public AcidenteViacao(String localizacao, String viaturaAtribuida, int numVeiculos, boolean presencaEncarcerados,
-            String tipoVia) {
-        super(localizacao, viaturaAtribuida);
+    public AcidenteViacao(String localizacao, ArrayList<String> viaturasAtribuidas, int numVeiculos,
+            boolean presencaEncarcerados, String tipoVia) {
+        super(localizacao, viaturasAtribuidas);
         this.numVeiculos = numVeiculos;
         this.presencaEncarcerados = presencaEncarcerados;
         this.tipoVia = tipoVia;

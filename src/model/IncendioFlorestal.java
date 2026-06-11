@@ -1,5 +1,6 @@
 package model;
 
+import java.util.ArrayList;
 import java.util.Objects;
 
 public class IncendioFlorestal extends Incendio {
@@ -8,13 +9,13 @@ public class IncendioFlorestal extends Incendio {
 
     // Construtor sem parâmetros
     public IncendioFlorestal() {
-        this("Desconhecido", "Nenhuma Viatura", 1, 0, 0.0, "Não especificado");
+        this("Desconhecido", new ArrayList<String>(), 1, 0, 0.0, "Não especificado");
     }
 
     // Construtor com parâmetros
-    public IncendioFlorestal(String localizacao, String viaturaAtribuida, int nivelAlarme, int tempoEstimadoCombate,
-            double areaAfetadaHectares, String relevoTerreno) {
-        super(localizacao, viaturaAtribuida, nivelAlarme, tempoEstimadoCombate);
+    public IncendioFlorestal(String localizacao, ArrayList<String> viaturasAtribuidas, int nivelAlarme,
+            int tempoEstimadoCombate, double areaAfetadaHectares, String relevoTerreno) {
+        super(localizacao, viaturasAtribuidas, nivelAlarme, tempoEstimadoCombate);
         this.areaAfetadaHectares = areaAfetadaHectares;
         this.relevoTerreno = relevoTerreno;
     }

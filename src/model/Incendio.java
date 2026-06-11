@@ -1,17 +1,20 @@
 package model;
 
+import java.util.ArrayList;
+
 public class Incendio extends Ocorrencia {
     protected int nivelAlarme; // 1 a 5
     protected int tempoEstimadoCombate; // em minutos
 
     // Construtor sem parâmetros
     public Incendio() {
-        this("Desconhecido", "Nenhuma Viatura", 1, 0);
+        this("Desconhecido", new ArrayList<String>(), 1, 0);
     }
 
     // Construtor com parâmetros
-    public Incendio(String localizacao, String viaturaAtribuida, int nivelAlarme, int tempoEstimadoCombate) {
-        super(localizacao, viaturaAtribuida);
+    public Incendio(String localizacao, ArrayList<String> viaturasAtribuidas, int nivelAlarme,
+            int tempoEstimadoCombate) {
+        super(localizacao, viaturasAtribuidas);
         this.nivelAlarme = nivelAlarme;
         this.tempoEstimadoCombate = tempoEstimadoCombate;
     }
