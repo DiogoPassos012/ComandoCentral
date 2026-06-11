@@ -19,6 +19,28 @@ public class JanelaPrincipal extends JFrame {
     private JLabel lblViaturaSelecionada; // Mostra a viatura escolhida
     private Viatura viaturaEscolhida = null;
 
+    // Detalhes Dinâmicos - Emergência Médica
+    private JSpinner spinMedVitimas;
+    private JTextField txtMedQueixa;
+    private JSpinner spinMedIdade;
+
+    // Detalhes Dinâmicos - Acidente de Viação
+    private JSpinner spinAciVeiculos;
+    private JComboBox<String> comboAciEncarcerados;
+    private JComboBox<String> comboAciVia;
+
+    // Detalhes Dinâmicos - Incêndio Urbano
+    private JComboBox<Integer> comboUrbAlarme;
+    private JTextField txtUrbTempo;
+    private JComboBox<String> comboUrbEdificio;
+    private JSpinner spinUrbPisos;
+
+    // Detalhes Dinâmicos - Incêndio Florestal
+    private JComboBox<Integer> comboFloAlarme;
+    private JTextField txtFloTempo;
+    private JTextField txtFloArea;
+    private JComboBox<String> comboFloRelevo;
+
     public JanelaPrincipal() {
         listaOcorrencias = new ArrayList<>();
         frotaViaturas = new ArrayList<>();
@@ -30,7 +52,7 @@ public class JanelaPrincipal extends JFrame {
 
         // Configurações Básicas da Janela
         setTitle("COMANDO CENTRAL - Controlo e Gestão de Ocorrências");
-        setSize(900, 530);
+        setSize(900, 600);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
         setLayout(new BorderLayout(10, 10));
@@ -38,42 +60,45 @@ public class JanelaPrincipal extends JFrame {
         // 1. PAINEL SUPERIOR
         JPanel panelTopo = new JPanel();
         panelTopo.setBackground(new Color(24, 34, 54));
-        JLabel lblTitulo = new JLabel("SISTEMA DE DESPACHO E GESTÃO DE MEIOS v1.5");
+        JLabel lblTitulo = new JLabel("Sistena de Controlo e Gestão de Ocorrências");
         lblTitulo.setForeground(Color.WHITE);
         lblTitulo.setFont(new Font("Arial", Font.BOLD, 16));
         panelTopo.add(lblTitulo);
         add(panelTopo, BorderLayout.NORTH);
 
         // 2. PAINEL ESQUERDO (Formulário)
-        JPanel panelEsquerdo = new JPanel(new GridLayout(10, 1, 5, 5));
+        JPanel panelEsquerdo = new JPanel(new BorderLayout(5, 5));
         panelEsquerdo.setBorder(BorderFactory.createTitledBorder("Registar Ocorrência"));
-        panelEsquerdo.setPreferredSize(new Dimension(320, 400));
+        panelEsquerdo.setPreferredSize(new Dimension(320, 500));
 
-        panelEsquerdo.add(new JLabel(" Tipo de Ocorrência:"));
+        // Painel para os Campos Comuns
+        JPanel panelComum = new JPanel(new GridLayout(8, 1, 3, 3));
+
+        panelComum.add(new JLabel(" Tipo de Ocorrência:"));
         comboTipo = new JComboBox<>(
                 new String[] { "Emergência Médica", "Acidente de Viação", "Incêndio Urbano", "Incêndio Florestal" });
-        panelEsquerdo.add(comboTipo);
+        panelComum.add(comboTipo);
 
-        panelEsquerdo.add(new JLabel(" Localização e Tipo de Local:"));
+        panelComum.add(new JLabel(" Localização e Tipo de Local:"));
         JPanel panelLocalInput = new JPanel(new BorderLayout(5, 5));
         txtLocalizacao = new JTextField();
         comboTipoLocal = new JComboBox<>(new String[] { "Habitação", "Estabelecimento Público", "Via Pública" });
         panelLocalInput.add(txtLocalizacao, BorderLayout.CENTER);
         panelLocalInput.add(comboTipoLocal, BorderLayout.EAST);
-        panelEsquerdo.add(panelLocalInput);
+        panelComum.add(panelLocalInput);
 
-        panelEsquerdo.add(new JLabel(" Freguesia (V. N. Gaia):"));
+        panelComum.add(new JLabel(" Freguesia (V. N. Gaia):"));
         comboFreguesia = new JComboBox<>(new String[] {
-            "Arcozelo", "Avintes", "Canelas", "Canidelo", 
-            "Grijó e Sermonde", "Gulpilhares e Valadares", "Madalena", 
-            "Mafamude e Vilar do Paraíso", "Oliveira do Douro", 
-            "Pedroso e Seixezelo", "Sandim, Olival, Lever e Crestuma", 
-            "Santa Marinha e São Pedro da Afurada", "São Félix da Marinha", 
-            "Vilar de Andorinho"
+                "Arcozelo", "Avintes", "Canelas", "Canidelo",
+                "Grijó e Sermonde", "Gulpilhares e Valadares", "Madalena",
+                "Mafamude e Vilar do Paraíso", "Oliveira do Douro",
+                "Pedroso e Seixezelo", "Sandim, Olival, Lever e Crestuma",
+                "Santa Marinha e São Pedro da Afurada", "São Félix da Marinha",
+                "Vilar de Andorinho"
         });
-        panelEsquerdo.add(comboFreguesia);
+        panelComum.add(comboFreguesia);
 
-        panelEsquerdo.add(new JLabel(" Viatura para Despacho:"));
+        panelComum.add(new JLabel(" Viatura para Despacho:"));
 
         // Sub-painel para o botão de seleção e exibição da viatura
         JPanel panelViaturaSelec = new JPanel(new BorderLayout(5, 5));
@@ -83,15 +108,95 @@ public class JanelaPrincipal extends JFrame {
         JButton btnEscolherViatura = new JButton("Escolher...");
         panelViaturaSelec.add(lblViaturaSelecionada, BorderLayout.CENTER);
         panelViaturaSelec.add(btnEscolherViatura, BorderLayout.EAST);
-        panelEsquerdo.add(panelViaturaSelec);
+        panelComum.add(panelViaturaSelec);
 
+        panelEsquerdo.add(panelComum, BorderLayout.NORTH);
+
+        // Painel para os Detalhes Dinâmicos (CardLayout)
+        CardLayout cardLayout = new CardLayout();
+        JPanel panelDinamico = new JPanel(cardLayout);
+
+        // Card 1: Emergência Médica
+        JPanel cardMedica = new JPanel(new GridLayout(3, 2, 5, 5));
+        cardMedica.setBorder(BorderFactory.createTitledBorder("Detalhes Médicos"));
+        spinMedVitimas = new JSpinner(new SpinnerNumberModel(1, 0, 100, 1));
+        txtMedQueixa = new JTextField();
+        spinMedIdade = new JSpinner(new SpinnerNumberModel(40, 0, 120, 1));
+        cardMedica.add(new JLabel("Nº de Vítimas:"));
+        cardMedica.add(spinMedVitimas);
+        cardMedica.add(new JLabel("Queixa Principal:"));
+        cardMedica.add(txtMedQueixa);
+        cardMedica.add(new JLabel("Idade do Paciente:"));
+        cardMedica.add(spinMedIdade);
+
+        // Card 2: Acidente de Viação
+        JPanel cardAcidente = new JPanel(new GridLayout(3, 2, 5, 5));
+        cardAcidente.setBorder(BorderFactory.createTitledBorder("Detalhes do Acidente"));
+        spinAciVeiculos = new JSpinner(new SpinnerNumberModel(2, 1, 50, 1));
+        comboAciEncarcerados = new JComboBox<>(new String[] { "Não", "Sim" });
+        comboAciVia = new JComboBox<>(new String[] { "Autoestrada", "Via Urbana", "Estrada Nacional", "Outra" });
+        cardAcidente.add(new JLabel("Veículos Envolvidos:"));
+        cardAcidente.add(spinAciVeiculos);
+        cardAcidente.add(new JLabel("Há Encarcerados?"));
+        cardAcidente.add(comboAciEncarcerados);
+        cardAcidente.add(new JLabel("Tipo de Via:"));
+        cardAcidente.add(comboAciVia);
+
+        // Card 3: Incêndio Urbano
+        JPanel cardUrbano = new JPanel(new GridLayout(4, 2, 3, 3));
+        cardUrbano.setBorder(BorderFactory.createTitledBorder("Incêndio Urbano"));
+        comboUrbAlarme = new JComboBox<>(new Integer[] { 1, 2, 3, 4, 5 });
+        txtUrbTempo = new JTextField("30");
+        comboUrbEdificio = new JComboBox<>(new String[] { "Habitação", "Comercial", "Industrial", "Outro" });
+        spinUrbPisos = new JSpinner(new SpinnerNumberModel(1, 1, 150, 1));
+        cardUrbano.add(new JLabel("Nível Alarme:"));
+        cardUrbano.add(comboUrbAlarme);
+        cardUrbano.add(new JLabel("Tempo Est. (min):"));
+        cardUrbano.add(txtUrbTempo);
+        cardUrbano.add(new JLabel("Tipo Edifício:"));
+        cardUrbano.add(comboUrbEdificio);
+        cardUrbano.add(new JLabel("Pisos Afetados:"));
+        cardUrbano.add(spinUrbPisos);
+
+        // Card 4: Incêndio Florestal
+        JPanel cardFlorestal = new JPanel(new GridLayout(4, 2, 3, 3));
+        cardFlorestal.setBorder(BorderFactory.createTitledBorder("Incêndio Florestal"));
+        comboFloAlarme = new JComboBox<>(new Integer[] { 1, 2, 3, 4, 5 });
+        txtFloTempo = new JTextField("60");
+        txtFloArea = new JTextField("1.0");
+        comboFloRelevo = new JComboBox<>(new String[] { "Plano", "Acidentado", "Montanhoso" });
+        cardFlorestal.add(new JLabel("Nível Alarme:"));
+        cardFlorestal.add(comboFloAlarme);
+        cardFlorestal.add(new JLabel("Tempo Est. (min):"));
+        cardFlorestal.add(txtFloTempo);
+        cardFlorestal.add(new JLabel("Área Afetada (ha):"));
+        cardFlorestal.add(txtFloArea);
+        cardFlorestal.add(new JLabel("Relevo Terreno:"));
+        cardFlorestal.add(comboFloRelevo);
+
+        panelDinamico.add(cardMedica, "Emergência Médica");
+        panelDinamico.add(cardAcidente, "Acidente de Viação");
+        panelDinamico.add(cardUrbano, "Incêndio Urbano");
+        panelDinamico.add(cardFlorestal, "Incêndio Florestal");
+
+        panelEsquerdo.add(panelDinamico, BorderLayout.CENTER);
+
+        // Painel do Botão e Ação
+        JPanel panelAcao = new JPanel(new GridLayout(2, 1, 5, 5));
         JButton btnAdicionar = new JButton("Despachar Meio");
         btnAdicionar.setBackground(new Color(34, 139, 34));
         btnAdicionar.setForeground(Color.WHITE);
         btnAdicionar.setFont(new Font("Arial", Font.BOLD, 12));
-        panelEsquerdo.add(new JLabel("")); // Espaçador
-        panelEsquerdo.add(btnAdicionar);
+        panelAcao.add(new JLabel("")); // Espaçador
+        panelAcao.add(btnAdicionar);
+        panelEsquerdo.add(panelAcao, BorderLayout.SOUTH);
         add(panelEsquerdo, BorderLayout.WEST);
+
+        // Listener para alternar os cards
+        comboTipo.addActionListener(e -> {
+            String selecionado = (String) comboTipo.getSelectedItem();
+            cardLayout.show(panelDinamico, selecionado);
+        });
 
         // 3. PAINEL CENTRAL (Lista)
         JPanel panelCentral = new JPanel(new BorderLayout(5, 5));
@@ -138,20 +243,48 @@ public class JanelaPrincipal extends JFrame {
                 v.setDisponivel(false); // Tranca a viatura na frota global
             }
 
-            // Concatenar localidade, tipo de local e freguesia para guardar como localização da ocorrência
+            // Concatenar localidade, tipo de local e freguesia para guardar como
+            // localização da ocorrência
             String tipoLocal = (String) comboTipoLocal.getSelectedItem();
             String freguesia = (String) comboFreguesia.getSelectedItem();
             String localizacaoCompleta = local + " [" + tipoLocal + "] (" + freguesia + ")";
 
-            // 3. Criar a ocorrência correta passando o ArrayList (idsViaturas)
+            // 3. Criar a ocorrência correta passando o ArrayList (idsViaturas) e os dados
+            // dinâmicos do formulário
             if (tipo.equals("Emergência Médica")) {
-                nova = new EmergenciaMedica(localizacaoCompleta, idsViaturas, 1, "Queixa Geral", 40);
+                int numVitimas = (Integer) spinMedVitimas.getValue();
+                String queixa = txtMedQueixa.getText();
+                int idade = (Integer) spinMedIdade.getValue();
+                nova = new EmergenciaMedica(localizacaoCompleta, idsViaturas, numVitimas, queixa, idade);
             } else if (tipo.equals("Acidente de Viação")) {
-                nova = new AcidenteViacao(localizacaoCompleta, idsViaturas, 2, false, "Via Urbana");
+                int numVeiculos = (Integer) spinAciVeiculos.getValue();
+                boolean enc = comboAciEncarcerados.getSelectedItem().equals("Sim");
+                String via = (String) comboAciVia.getSelectedItem();
+                nova = new AcidenteViacao(localizacaoCompleta, idsViaturas, numVeiculos, enc, via);
             } else if (tipo.equals("Incêndio Urbano")) {
-                nova = new IncendioUrbano(localizacaoCompleta, idsViaturas, 1, 30, "Habitação", 1);
+                int alarme = (Integer) comboUrbAlarme.getSelectedItem();
+                int tempo = 30;
+                try {
+                    tempo = Integer.parseInt(txtUrbTempo.getText().trim());
+                } catch (NumberFormatException ex) {
+                }
+                String ed = (String) comboUrbEdificio.getSelectedItem();
+                int pisos = (Integer) spinUrbPisos.getValue();
+                nova = new IncendioUrbano(localizacaoCompleta, idsViaturas, alarme, tempo, ed, pisos);
             } else if (tipo.equals("Incêndio Florestal")) {
-                nova = new IncendioFlorestal(localizacaoCompleta, idsViaturas, 2, 60, 1.0, "Plano");
+                int alarme = (Integer) comboFloAlarme.getSelectedItem();
+                int tempo = 60;
+                try {
+                    tempo = Integer.parseInt(txtFloTempo.getText().trim());
+                } catch (NumberFormatException ex) {
+                }
+                double area = 1.0;
+                try {
+                    area = Double.parseDouble(txtFloArea.getText().trim());
+                } catch (NumberFormatException ex) {
+                }
+                String rel = (String) comboFloRelevo.getSelectedItem();
+                nova = new IncendioFlorestal(localizacaoCompleta, idsViaturas, alarme, tempo, area, rel);
             }
 
             // 4. Se correu tudo bem, adiciona à lista e limpa o ecrã
@@ -163,6 +296,26 @@ public class JanelaPrincipal extends JFrame {
                 txtLocalizacao.setText("");
                 comboFreguesia.setSelectedIndex(0);
                 comboTipoLocal.setSelectedIndex(0);
+
+                // Limpar campos de detalhes
+                spinMedVitimas.setValue(1);
+                txtMedQueixa.setText("");
+                spinMedIdade.setValue(40);
+
+                spinAciVeiculos.setValue(2);
+                comboAciEncarcerados.setSelectedIndex(0);
+                comboAciVia.setSelectedIndex(0);
+
+                comboUrbAlarme.setSelectedIndex(0);
+                txtUrbTempo.setText("30");
+                comboUrbEdificio.setSelectedIndex(0);
+                spinUrbPisos.setValue(1);
+
+                comboFloAlarme.setSelectedIndex(0);
+                txtFloTempo.setText("60");
+                txtFloArea.setText("1.0");
+                comboFloRelevo.setSelectedIndex(0);
+
                 viaturasSelecionadasParaNovaOcorrencia.clear();
                 lblViaturaSelecionada.setText("[ Nenhuma Selecionada ]");
                 lblViaturaSelecionada.setForeground(Color.RED);
@@ -179,7 +332,7 @@ public class JanelaPrincipal extends JFrame {
             }
 
             Ocorrencia oc = listaOcorrencias.get(index);
-            
+
             String[] estados = { "Despacho", "No Local", "Concluida" };
             String estadoSelecionado = (String) JOptionPane.showInputDialog(
                     JanelaPrincipal.this,
@@ -188,8 +341,7 @@ public class JanelaPrincipal extends JFrame {
                     JOptionPane.QUESTION_MESSAGE,
                     null,
                     estados,
-                    oc.getEstado()
-            );
+                    oc.getEstado());
 
             if (estadoSelecionado != null) {
                 String estadoAntigo = oc.getEstado();
@@ -201,7 +353,7 @@ public class JanelaPrincipal extends JFrame {
                         libertarViatura(idViatura);
                     }
                 }
-                
+
                 atualizarListaVisual();
             }
         });
@@ -215,7 +367,8 @@ public class JanelaPrincipal extends JFrame {
         dialog.setLayout(new BorderLayout());
 
         // Dica simples para o utilizador
-        JLabel lblDica = new JLabel(" Segure a tecla CTRL (ou Shift) para selecionar múltiplas viaturas em cada aba.", JLabel.CENTER);
+        JLabel lblDica = new JLabel(" Segure a tecla CTRL (ou Shift) para selecionar múltiplas viaturas em cada aba.",
+                JLabel.CENTER);
         lblDica.setFont(new Font("Arial", Font.ITALIC, 11));
         lblDica.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
         dialog.add(lblDica, BorderLayout.NORTH);
@@ -275,7 +428,8 @@ public class JanelaPrincipal extends JFrame {
                 // Criar um texto bonito com todas as viaturas selecionadas
                 StringBuilder sb = new StringBuilder();
                 for (int i = 0; i < viaturasSelecionadasParaNovaOcorrencia.size(); i++) {
-                    if (i > 0) sb.append(", ");
+                    if (i > 0)
+                        sb.append(", ");
                     sb.append(viaturasSelecionadasParaNovaOcorrencia.get(i).getId());
                 }
                 lblViaturaSelecionada.setText(sb.toString());
@@ -322,57 +476,67 @@ public class JanelaPrincipal extends JFrame {
             }
 
             String formatado = String.format(
-                "<html><body style='width: 450px; padding: 4px;'>"
-                + "<b style='color:#182236;'>ID %d - %s</b> <small style='color:#666666;'>(%s)</small><br>"
-                + "<b>Local:</b> %s<br>"
-                + "<b>Viaturas:</b> %s &nbsp;|&nbsp; <b>Estado:</b> <font color='%s'><b>%s</b></font><br>"
-                + "<small style='color:#555555;'>%s</small>"
-                + "</body></html>",
-                oc.getId(),
-                tipoOcorrencia,
-                horaFormatada,
-                oc.getLocalizacao(),
-                oc.getViaturasAtribuidas().isEmpty() ? "Nenhuma" : String.join(", ", oc.getViaturasAtribuidas()),
-                getEstadoCor(oc.getEstado()),
-                oc.getEstado(),
-                detalhes
-            );
+                    "<html><body style='width: 450px; padding: 4px;'>"
+                            + "<b style='color:#182236;'>ID %d - %s</b> <small style='color:#666666;'>(%s)</small><br>"
+                            + "<b>Local:</b> %s<br>"
+                            + "<b>Viaturas:</b> %s &nbsp;|&nbsp; <b>Estado:</b> <font color='%s'><b>%s</b></font><br>"
+                            + "<small style='color:#555555;'>%s</small>"
+                            + "</body></html>",
+                    oc.getId(),
+                    tipoOcorrencia,
+                    horaFormatada,
+                    oc.getLocalizacao(),
+                    oc.getViaturasAtribuidas().isEmpty() ? "Nenhuma" : String.join(", ", oc.getViaturasAtribuidas()),
+                    getEstadoCor(oc.getEstado()),
+                    oc.getEstado(),
+                    detalhes);
             listModel.addElement(formatado);
         }
     }
 
     private String getTipoOcorrenciaFormatado(Ocorrencia oc) {
-        if (oc instanceof EmergenciaMedica) return "Emergência Médica";
-        if (oc instanceof AcidenteViacao) return "Acidente de Viação";
-        if (oc instanceof IncendioUrbano) return "Incêndio Urbano";
-        if (oc instanceof IncendioFlorestal) return "Incêndio Florestal";
+        if (oc instanceof EmergenciaMedica)
+            return "Emergência Médica";
+        if (oc instanceof AcidenteViacao)
+            return "Acidente de Viação";
+        if (oc instanceof IncendioUrbano)
+            return "Incêndio Urbano";
+        if (oc instanceof IncendioFlorestal)
+            return "Incêndio Florestal";
         return "Ocorrência Geral";
     }
 
     private String getDetalhesFormatados(Ocorrencia oc) {
         if (oc instanceof EmergenciaMedica) {
             EmergenciaMedica m = (EmergenciaMedica) oc;
-            return "Vítimas: " + m.getNumVitimas() + " | Queixa: " + m.getQueixaPrincipal() + " | Idade: " + m.getIdadePaciente();
+            return "Vítimas: " + m.getNumVitimas() + " | Queixa: " + m.getQueixaPrincipal() + " | Idade: "
+                    + m.getIdadePaciente();
         }
         if (oc instanceof AcidenteViacao) {
             AcidenteViacao a = (AcidenteViacao) oc;
-            return "Veículos: " + a.getNumVeiculos() + " | Encarcerados: " + (a.isPresencaEncarcerados() ? "Sim" : "Não") + " | Via: " + a.getTipoVia();
+            return "Veículos: " + a.getNumVeiculos() + " | Encarcerados: "
+                    + (a.isPresencaEncarcerados() ? "Sim" : "Não") + " | Via: " + a.getTipoVia();
         }
         if (oc instanceof IncendioUrbano) {
             IncendioUrbano u = (IncendioUrbano) oc;
-            return "Nível Alarme: " + u.getNivelAlarme() + " | Edifício: " + u.getTipoEdificio() + " | Pisos: " + u.getNumPisosAfetados();
+            return "Nível Alarme: " + u.getNivelAlarme() + " | Edifício: " + u.getTipoEdificio() + " | Pisos: "
+                    + u.getNumPisosAfetados();
         }
         if (oc instanceof IncendioFlorestal) {
             IncendioFlorestal f = (IncendioFlorestal) oc;
-            return "Nível Alarme: " + f.getNivelAlarme() + " | Área: " + f.getAreaAfetadaHectares() + " ha | Terreno: " + f.getRelevoTerreno();
+            return "Nível Alarme: " + f.getNivelAlarme() + " | Área: " + f.getAreaAfetadaHectares() + " ha | Terreno: "
+                    + f.getRelevoTerreno();
         }
         return "";
     }
 
     private String getEstadoCor(String estado) {
-        if ("Despacho".equals(estado)) return "#FF8C00"; // DarkOrange
-        if ("No Local".equals(estado)) return "#008B8B"; // DarkCyan
-        if ("Concluida".equals(estado)) return "#228B22"; // ForestGreen
+        if ("Despacho".equals(estado))
+            return "#FF8C00"; // DarkOrange
+        if ("No Local".equals(estado))
+            return "#008B8B"; // DarkCyan
+        if ("Concluida".equals(estado))
+            return "#228B22"; // ForestGreen
         return "#000000";
     }
 }
