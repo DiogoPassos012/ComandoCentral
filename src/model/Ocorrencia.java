@@ -16,8 +16,7 @@ public abstract class Ocorrencia implements Operacional {
     protected LocalDateTime horaAlerta;
     protected ArrayList<String> viaturasAtribuidas;
 
-    // Construtor sem parâmetros - Usa o método this() para chamar o outro
-    // construtor
+    // Construtor sem parâmetros
     public Ocorrencia() {
         this("Desconhecido", new ArrayList<String>());
     }

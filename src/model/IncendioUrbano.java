@@ -7,7 +7,7 @@ public class IncendioUrbano extends Incendio {
     private String tipoEdificio; // "Habitação", "Comercial", "Industrial"
     private int numPisosAfetados;
 
-    // Construtor sem parâmetros - Usa o método this()
+    // Construtor sem parâmetros
     public IncendioUrbano() {
         this("Desconhecido", new ArrayList<String>(), 1, 0, "Não especificado", 1);
     }

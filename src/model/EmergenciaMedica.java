@@ -8,7 +8,7 @@ public class EmergenciaMedica extends Ocorrencia {
     private String queixaPrincipal;
     private int idadePaciente;
 
-    // Construtor sem parâmetros - Usa o método this()
+    // Construtor sem parâmetros
     public EmergenciaMedica() {
         this("Desconhecido", new ArrayList<String>(), 0, "Nenhuma", 0);
     }

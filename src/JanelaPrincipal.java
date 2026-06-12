@@ -42,7 +42,7 @@ public class JanelaPrincipal extends JFrame {
     private JComboBox<String> comboFloRelevo;
 
     public JanelaPrincipal() {
-        listaOcorrencias = new ArrayList<>();
+        listaOcorrencias = Database.carregarOcorrencias();
         frotaViaturas = new ArrayList<>();
         viaturasSelecionadasParaNovaOcorrencia = new ArrayList<>();
         listModel = new DefaultListModel<>();
@@ -289,6 +289,7 @@ public class JanelaPrincipal extends JFrame {
 
             // 4. Se correu tudo bem, adiciona à lista e limpa o ecrã
             if (nova != null) {
+                Database.gravarOcorrencia(tipo, local, "Despacho", idsViaturas);
                 listaOcorrencias.add(nova);
                 atualizarListaVisual();
 
@@ -346,6 +347,7 @@ public class JanelaPrincipal extends JFrame {
             if (estadoSelecionado != null) {
                 String estadoAntigo = oc.getEstado();
                 oc.setEstado(estadoSelecionado);
+                Database.atualizarEstadoOcorrencia(oc.getId(), estadoSelecionado);
 
                 // Se mudou para "Concluida" e antes não estava "Concluida", liberta as viaturas
                 if (estadoSelecionado.equals("Concluida") && !estadoAntigo.equals("Concluida")) {
@@ -353,10 +355,11 @@ public class JanelaPrincipal extends JFrame {
                         libertarViatura(idViatura);
                     }
                 }
-
                 atualizarListaVisual();
             }
         });
+
+        atualizarListaVisual();
     }
 
     // Método para abrir a janela flutuante com abas (Opção B)
@@ -445,14 +448,8 @@ public class JanelaPrincipal extends JFrame {
     }
 
     private void inicializarFrota() {
-        // Ambulâncias
-        frotaViaturas.add(new Viatura("ABSC-01", "Ambulância de Socorro Tipo B", "Ambulancia"));
-        frotaViaturas.add(new Viatura("ABSC-02", "Ambulância de Socorro Tipo B", "Ambulancia"));
-        // Incêndio
-        frotaViaturas.add(new Viatura("VUCI-01", "Veículo Urbano de Combate", "Incendio"));
-        frotaViaturas.add(new Viatura("VFCI-03", "Veículo Florestal de Combate", "Incendio"));
-        // Desencarceramento
-        frotaViaturas.add(new Viatura("VSAE-01", "Veículo de Socorro e Assistência", "Desencarceramento"));
+        // Carrega a frota diretamente do SQL Local
+        frotaViaturas = Database.carregarFrota();
     }
 
     private void libertarViatura(String idViatura) {
