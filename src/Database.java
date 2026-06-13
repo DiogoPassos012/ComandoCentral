@@ -222,7 +222,7 @@ public class Database {
                                 // diretamente:
                                 // (Se houver erro aqui, podes mudar para oc.setId(idReal) caso tenhas esse
                                 // método)
-                                oc.setId(idReal);
+                                 oc.setId(idReal);
 
                                 lista.add(oc);
                         }
@@ -230,5 +230,36 @@ public class Database {
                         System.out.println("Erro ao carregar ocorrencias: " + e.getMessage());
                 }
                 return lista;
+        }
+
+        // 5. Adicionar uma nova viatura na Base de Dados
+        public static boolean adicionarViatura(model.Viatura v) {
+                String sql = "INSERT INTO viaturas (id, nome, tipo, disponivel) VALUES (?, ?, ?, ?)";
+                try (Connection conn = getConnection();
+                                java.sql.PreparedStatement pstmt = conn.prepareStatement(sql)) {
+                        pstmt.setString(1, v.getId());
+                        pstmt.setString(2, v.getNome());
+                        pstmt.setString(3, v.getTipo());
+                        pstmt.setInt(4, v.isDisponivel() ? 1 : 0);
+                        pstmt.executeUpdate();
+                        return true;
+                } catch (Exception e) {
+                        System.out.println("Erro ao adicionar viatura: " + e.getMessage());
+                        return false;
+                }
+        }
+
+        // 6. Eliminar uma viatura da Base de Dados
+        public static boolean eliminarViatura(String id) {
+                String sql = "DELETE FROM viaturas WHERE id = ?";
+                try (Connection conn = getConnection();
+                                java.sql.PreparedStatement pstmt = conn.prepareStatement(sql)) {
+                        pstmt.setString(1, id);
+                        pstmt.executeUpdate();
+                        return true;
+                } catch (Exception e) {
+                        System.out.println("Erro ao eliminar viatura: " + e.getMessage());
+                        return false;
+                }
         }
 }

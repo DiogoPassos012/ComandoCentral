@@ -58,12 +58,23 @@ public class JanelaPrincipal extends JFrame {
         setLayout(new BorderLayout(10, 10));
 
         // 1. PAINEL SUPERIOR
-        JPanel panelTopo = new JPanel();
+        JPanel panelTopo = new JPanel(new BorderLayout(10, 10));
         panelTopo.setBackground(new Color(24, 34, 54));
-        JLabel lblTitulo = new JLabel("Sistena de Controlo e Gestão de Ocorrências");
+        panelTopo.setBorder(BorderFactory.createEmptyBorder(8, 15, 8, 15));
+
+        JLabel lblTitulo = new JLabel("Sistema de Controlo e Gestão de Ocorrências");
         lblTitulo.setForeground(Color.WHITE);
         lblTitulo.setFont(new Font("Arial", Font.BOLD, 16));
-        panelTopo.add(lblTitulo);
+        panelTopo.add(lblTitulo, BorderLayout.WEST);
+
+        JButton btnGerirViaturas = new JButton("Gerir Viaturas");
+        btnGerirViaturas.setBackground(new Color(41, 128, 185));
+        btnGerirViaturas.setForeground(Color.WHITE);
+        btnGerirViaturas.setFont(new Font("Arial", Font.BOLD, 12));
+        btnGerirViaturas.setFocusPainted(false);
+        btnGerirViaturas.addActionListener(e -> abrirJanelaGerirViaturas());
+        panelTopo.add(btnGerirViaturas, BorderLayout.EAST);
+
         add(panelTopo, BorderLayout.NORTH);
 
         // 2. PAINEL ESQUERDO (Formulário)
@@ -441,6 +452,154 @@ public class JanelaPrincipal extends JFrame {
             } else {
                 JOptionPane.showMessageDialog(dialog, "Selecione pelo menos uma viatura da lista!", "Aviso",
                         JOptionPane.WARNING_MESSAGE);
+            }
+        });
+
+        dialog.setVisible(true);
+    }
+
+    // Método para abrir o gestor de viaturas (Adicionar/Remover)
+    private void abrirJanelaGerirViaturas() {
+        // Limpar seleções ativas na janela principal para evitar inconsistências
+        viaturasSelecionadasParaNovaOcorrencia.clear();
+        lblViaturaSelecionada.setText("[ Nenhuma Selecionada ]");
+        lblViaturaSelecionada.setForeground(Color.RED);
+
+        JDialog dialog = new JDialog(this, "Gerir Frota de Viaturas", true);
+        dialog.setSize(600, 450);
+        dialog.setLocationRelativeTo(this);
+        dialog.setLayout(new BorderLayout(10, 10));
+
+        // Painel para a listagem das viaturas
+        JPanel panelList = new JPanel(new BorderLayout(5, 5));
+        panelList.setBorder(BorderFactory.createTitledBorder("Frota Atual"));
+
+        DefaultListModel<Viatura> modelFrota = new DefaultListModel<>();
+        for (Viatura v : frotaViaturas) {
+            modelFrota.addElement(v);
+        }
+        JList<Viatura> listFrota = new JList<>(modelFrota);
+        listFrota.setFont(new Font("Monospaced", Font.PLAIN, 12));
+        panelList.add(new JScrollPane(listFrota), BorderLayout.CENTER);
+
+        JButton btnEliminar = new JButton("Remover Viatura Selecionada");
+        btnEliminar.setBackground(new Color(220, 53, 69));
+        btnEliminar.setForeground(Color.WHITE);
+        btnEliminar.setFont(new Font("Arial", Font.BOLD, 12));
+        panelList.add(btnEliminar, BorderLayout.SOUTH);
+
+        dialog.add(panelList, BorderLayout.CENTER);
+
+        // Painel para adicionar novas viaturas
+        JPanel panelAdicionar = new JPanel(new GridBagLayout());
+        panelAdicionar.setBorder(BorderFactory.createTitledBorder("Adicionar Nova Viatura"));
+        panelAdicionar.setPreferredSize(new Dimension(250, 400));
+
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.insets = new Insets(5, 10, 5, 10);
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        gbc.gridx = 0;
+        gbc.weightx = 1.0;
+
+        // ID / Matrícula
+        gbc.gridy = 0;
+        panelAdicionar.add(new JLabel("Matrícula:"), gbc);
+        gbc.gridy = 1;
+        JTextField txtId = new JTextField();
+        panelAdicionar.add(txtId, gbc);
+
+        // Nome
+        gbc.gridy = 2;
+        panelAdicionar.add(new JLabel("Designação /Nr de Cauda:"), gbc);
+        gbc.gridy = 3;
+        JTextField txtNome = new JTextField();
+        panelAdicionar.add(txtNome, gbc);
+
+        // Tipo
+        gbc.gridy = 4;
+        panelAdicionar.add(new JLabel("Tipo de Viatura:"), gbc);
+        gbc.gridy = 5;
+        JComboBox<String> comboTipoViatura = new JComboBox<>(new String[] {
+                "Ambulancia", "Incendio", "Desencarceramento"
+        });
+        panelAdicionar.add(comboTipoViatura, gbc);
+
+        // Botão Adicionar
+        gbc.gridy = 6;
+        gbc.insets = new Insets(20, 10, 5, 10);
+        JButton btnAddViatura = new JButton("Adicionar Viatura");
+        btnAddViatura.setBackground(new Color(40, 167, 69));
+        btnAddViatura.setForeground(Color.WHITE);
+        btnAddViatura.setFont(new Font("Arial", Font.BOLD, 12));
+        panelAdicionar.add(btnAddViatura, gbc);
+
+        dialog.add(panelAdicionar, BorderLayout.EAST);
+
+        // Ações do Botão Adicionar
+        btnAddViatura.addActionListener(e -> {
+            String id = txtId.getText().trim().toUpperCase();
+            String nome = txtNome.getText().trim();
+            String tipo = (String) comboTipoViatura.getSelectedItem();
+
+            if (id.isEmpty() || nome.isEmpty()) {
+                JOptionPane.showMessageDialog(dialog, "Por favor, preencha todos os campos!", "Aviso",
+                        JOptionPane.WARNING_MESSAGE);
+                return;
+            }
+
+            // Verificar se ID já existe
+            for (Viatura v : frotaViaturas) {
+                if (v.getId().equalsIgnoreCase(id)) {
+                    JOptionPane.showMessageDialog(dialog, "Já existe uma viatura com esse ID/Matrícula!", "Erro",
+                            JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
+            }
+
+            Viatura nova = new Viatura(id, nome, tipo);
+            if (Database.adicionarViatura(nova)) {
+                frotaViaturas.add(nova);
+                modelFrota.addElement(nova);
+                txtId.setText("");
+                txtNome.setText("");
+                JOptionPane.showMessageDialog(dialog, "Viatura adicionada com sucesso!", "Sucesso",
+                        JOptionPane.INFORMATION_MESSAGE);
+            } else {
+                JOptionPane.showMessageDialog(dialog, "Erro ao gravar viatura na base de dados.", "Erro",
+                        JOptionPane.ERROR_MESSAGE);
+            }
+        });
+
+        // Ações do Botão Remover
+        btnEliminar.addActionListener(e -> {
+            Viatura selecionada = listFrota.getSelectedValue();
+            if (selecionada == null) {
+                JOptionPane.showMessageDialog(dialog, "Selecione uma viatura para remover!", "Aviso",
+                        JOptionPane.WARNING_MESSAGE);
+                return;
+            }
+
+            // Impedir remoção se estiver em serviço
+            if (!selecionada.isDisponivel()) {
+                JOptionPane.showMessageDialog(dialog, "Não é possível remover uma viatura em serviço!", "Erro",
+                        JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+
+            int confirm = JOptionPane.showConfirmDialog(dialog,
+                    "Tem a certeza que deseja remover a viatura " + selecionada.getId() + "?",
+                    "Confirmar Remoção", JOptionPane.YES_NO_OPTION);
+
+            if (confirm == JOptionPane.YES_OPTION) {
+                if (Database.eliminarViatura(selecionada.getId())) {
+                    frotaViaturas.remove(selecionada);
+                    modelFrota.removeElement(selecionada);
+                    JOptionPane.showMessageDialog(dialog, "Viatura removida com sucesso!", "Sucesso",
+                            JOptionPane.INFORMATION_MESSAGE);
+                } else {
+                    JOptionPane.showMessageDialog(dialog, "Erro ao remover viatura da base de dados.", "Erro",
+                            JOptionPane.ERROR_MESSAGE);
+                }
             }
         });
 
